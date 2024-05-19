@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Quiz</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <h1>Quiz Time</h1><br>
+    <h3>Direction: Analyze the following Question and select the right answer.</h3>
+    <h3>Reminder: If you click the "Next Question" it will be automatically counted as "wrong". </h3>
+    <h3>Goodluck!!</h3>
+    <div id="timer">Time left: 30 seconds</div>
+    <div id="quiz-container"></div>
+    <button id="next-question-button" onclick="nextQuestion()">Next Question</button>
+    <audio id="confetti-sound" src="confetti.mp3" preload="auto"></audio>
+    <script>
+        // Initialize the interval
+        let intervalId;
+
+        // Create the quiz
+        const quizContainer = document.getElementById('quiz-container');
+        let currentQuestionIndex = 0;
+        function createQuiz() {
+            quizContainer.innerHTML = '';
+            const questionEl = document.createElement('h2');
+            questionEl.textContent = questions[currentQuestionIndex].question;
+            quizContainer.appendChild(questionEl);
+            const optionsEl = document.createElement('div');
+            optionsEl.className = 'options';
+            for (let j = 0; j < questions[currentQuestionIndex].answers.length; j++) {
+                const answerEl = document.createElement('button');
+                answerEl.textContent = questions[currentQuestionIndex].answers[j];
+                answerEl.value = j;
+                answerEl.onclick = () => {
+                    questions[currentQuestionIndex].selected = j;
+                    clearInterval(intervalId);
+                    nextQuestion();
+                };
+                optionsEl.appendChild(answerEl);
+            }
+            quizContainer.appendChild(optionsEl);
+            startTimer();
+        }
+
+        // Shuffle the questions
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Start the timer
+        function startTimer() {
+            timeLeft = 30;
+            clearInterval(intervalId);
+            intervalId = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerHTML = `Time left: ${timeLeft} seconds`;
+                if (timeLeft <= 0) {
+                    clearInterval(intervalId);
+                    nextQuestion();
+                }
+            }, 1000);
+        }
+
+        // Add a function to handle the end of the quiz
+        function endQuiz() {
+            clearInterval(intervalId);
+            quizContainer.innerHTML = '';
+            const scoreEl = document.createElement('h2');
+            scoreEl.id = 'score';
+            scoreEl.textContent = `Your score is ${calculateScore()} out of ${questions.length}`;
+            quizContainer.appendChild(scoreEl);
+            const restartEl = document.createElement('button');
+            restartEl.id = 'restart-button';
+            restartEl.textContent = 'Restart Quiz';
+            restartEl.onclick = createQuiz;
+            quizContainer.appendChild(restartEl);
+        }
+
+        // Call the endQuiz function when all questions have been answered
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                createQuiz();
+            } else {
+                endQuiz();
+            }
+        }
+
+        // Calculate the score
+        function calculateScore() {
+            let score = 0;
+            questions.forEach(question => {
+                if (question.selected === question.correct) {
+                    score++;
+                }
+            });
+            return score;
+        }
+
+        // Quiz questions
+        const questions = [
+            {
+                question: 'A positive attitude is of great importance when it comes to empowerment strategies.',
+                answers: ['True', 'False',],
+                correct: 0,
+                selected: undefined
+            },
+            {
+                question: 'Advocacy is enganging in purposeful action that will help people advance their rights, opportunities, causes and human dignity.',
+                answers: ['True', 'False',],
+                correct: 0,
+                selected: undefined
+            },
+            {
+                question: 'Community assest include skills, interests, and experiences of individuals and local organizations.',
+                answers: ['True', 'False',],
+                correct: 0,
+                selected: undefined
+            },
+            {
+                question: 'If we do not provide the needed service, we will link you to those who do, this statement is a good principle for community action.',
+                answers: ['True', 'False',],
+                correct: 0,
+                selected: undefined
+            },
+            {
+                question: 'Empowerment helps client make better decisions and control their own lives by increasing social barriers and limiting the ability to use their own power.',
+                answers: ['True', 'False',],
+                correct: 1,
+                selected: undefined
+            },
+            {
+                question: 'You join a group that helps build houses for the poor. The statement is an example of advocacy.',
+                answers: ['True', 'False',],
+                correct: 1,
+                selected: undefined
+            },
+            {
+                question: 'Strategy seeks to ensure that all people in the society are able to have their voice heard on the issues that are important to them.',
+                answers: ['True', 'False',],
+                correct: 1,
+                selected: undefined
+            },
+            {
+                question: 'Community action provides access to opportunities that people need to improve their lives.',
+                answers: ['True', 'False',],
+                correct: 0,
+                selected: undefined
+            },
+            {
+                question: 'Self-confidence is an empowerment strategy that enables every member of the community to perform their roles and responsibilities well.',
+                answers: ['True', 'False',],
+                correct: 1,
+                selected: undefined
+            },
+            {
+                question: 'Empowered People feel more confident, cooperative, and supportive in any organizations they belong.',
+                answers: ['True', 'False',],
+                correct: 1,
+                selected: undefined
+            },
+        ];
+
+        // Initialize the quiz
+        shuffle(questions);
+        createQuiz();
+
+        // Add a function to play the confetti sound
+        function playConfettiSound() {
+            const confettiSound = document.getElementById('confetti-sound');
+            confettiSound.play();
+        }
+    </script>
+</body>
+</html>
